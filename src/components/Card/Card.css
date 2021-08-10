@@ -1,0 +1,55 @@
+.cardHolder {
+  position: absolute;
+  top: 60vh;
+  width: 100%;
+  transform: translate(0, -20vh);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20em;
+  width: 80%;
+  background: hsl(88, 25%, 11%, 0.5);
+  opacity: 0.9;
+  border-radius: 6em;
+}
+
+.card p {
+  position: relative;
+  padding: 2em;
+}
+
+.card p {
+  color: #f0e3ca;
+  font-family: sans-serif;
+  font-size: 3em;
+  font-weight: 500;
+}
+
+.refreshIcon {
+  color: white;
+  padding: 1em 1em;
+  font-size: 2em;
+}
+
+.refresh-start {
+  animation-name: rotate;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-play-state: running;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

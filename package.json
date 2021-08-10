@@ -1,0 +1,26 @@
+{
+  "name": "Portfolio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@babylonjs/inspector": "^4.2.0",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
+    "prop-types": "^15.7.2",
+    "react-icons": "^4.2.0",
+    "react-lottie": "^1.2.3"
+  },
+  "devDependencies": {
+    "@babylonjs/core": "^4.2.0",
+    "parcel-bundler": "^1.12.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "scripts": {
+    "dev": "parcel index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
