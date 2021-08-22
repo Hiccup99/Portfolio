@@ -1,172 +1,208 @@
 import React, { Component } from "react";
 import "./UI.css";
-import Card from "../Card/Card";
-import { FaLinkedinIn, FaGithub, FaFileDownload } from "react-icons/fa";
+import { QuoteGenerator } from "../QuoteGenerator/QuoteGenerator";
+import { MainContainer } from "../MainContainer/MainContainer";
+import { SocialContainer } from "../SocialContainer/SocialContainer";
+import SimplexNoise from "simplex-noise";
+
+let renderer, scene, camera, cameraCtrl;
+let width, height, cx, cy, wWidth, wHeight;
+let light1, light2, light3, light4, light5;
+let gArray;
+const TMath = THREE.Math;
+let plane;
+const simplex = new SimplexNoise();
+
+const mouse = new THREE.Vector2();
+const mousePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const mousePosition = new THREE.Vector3();
+const raycaster = new THREE.Raycaster();
+
+const noiseInput = document.getElementById("");
+const heightInput = document.getElementById("");
+
+const conf = {
+  fov: 75,
+  cameraZ: 75,
+  xyCoef: 50,
+  zCoef: 10,
+  lightIntensity: 0.9,
+  ambientColor: 0x000000,
+  light1Color: 0x0e09dc,
+  light2Color: 0x1cd1e1,
+  light3Color: 0x18c02c,
+  light4Color: 0xee3bcf,
+  ...conf,
+};
 class UI extends Component {
   state = {};
 
   componentDidMount = () => {
-    this.painCanvas();
+    this.init();
   };
 
-  painCanvas = () => {
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // Configuration, Play with these
-    var config = {
-      particleNumber: 300,
-      maxParticleSize: 0.5,
-      maxSpeed: 10,
-      colorVariation: 50,
-    };
-    // Colors
-    var colorPalette = {
-      bg: { r: 0, g: 0, b: 0 },
-      matter: [
-        { r: 36, g: 18, b: 42 }, // darkPRPL
-        { r: 78, g: 36, b: 42 }, // rockDust
-        { r: 252, g: 178, b: 96 }, // solorFlare
-        { r: 253, g: 238, b: 152 }, // totesASun
-      ],
-    };
-    // Some Variables hanging out
-    var particles = [],
-      drawBg;
-
-    // Draws the background for the canvas, because space
-    drawBg = function (ctx, color) {
-      ctx.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    };
-
-    // Particle Constructor
-    var Particle = function (x, y) {
-      // X Coordinate
-      this.x = x || Math.round(Math.random() * canvas.width);
-      // Y Coordinate
-      this.y = y || Math.round(Math.random() * canvas.height);
-      // Radius of the space dust
-      this.r = Math.ceil(Math.random() * config.maxParticleSize);
-      // Color of the rock, given some randomness
-      this.c = colorVariation(
-        colorPalette.matter[
-          Math.floor(Math.random() * colorPalette.matter.length)
-        ],
-        true
-      );
-      // Speed of which the rock travels
-      this.s = Math.pow(Math.ceil(Math.random() * config.maxSpeed), 0.7);
-      // Direction the Rock flies
-      this.d = Math.round(Math.random() * 360);
-    };
-
-    // Provides some nice color variation
-    // Accepts an rgba object
-    // returns a modified rgba object or a rgba string if true is passed in for argument 2
-    var colorVariation = function (color, returnString) {
-      var r, g, b, a, variation;
-      r = Math.round(
-        Math.random() * config.colorVariation -
-          config.colorVariation / 2 +
-          color.r
-      );
-      g = Math.round(
-        Math.random() * config.colorVariation -
-          config.colorVariation / 2 +
-          color.g
-      );
-      b = Math.round(
-        Math.random() * config.colorVariation -
-          config.colorVariation / 2 +
-          color.b
-      );
-      a = Math.random() + 0.5;
-      if (returnString) {
-        return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-      } else {
-        return { r, g, b, a };
-      }
-    };
-
-    // Used to find the rocks next point in space, accounting for speed and direction
-    var updateParticleModel = function (p) {
-      var a = 180 - (p.d + 90); // find the 3rd angle
-      p.d > 0 && p.d < 180
-        ? (p.x += (p.s * Math.sin(p.d)) / Math.sin(p.s))
-        : (p.x -= (p.s * Math.sin(p.d)) / Math.sin(p.s));
-      p.d > 90 && p.d < 270
-        ? (p.y += (p.s * Math.sin(a)) / Math.sin(p.s))
-        : (p.y -= (p.s * Math.sin(a)) / Math.sin(p.s));
-      return p;
-    };
-
-    // Just the function that physically draws the particles
-    // Physically? sure why not, physically.
-    var drawParticle = function (x, y, r, c) {
-      ctx.beginPath();
-      ctx.fillStyle = c;
-      ctx.arc(x, y, r, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.closePath();
-    };
-
-    // Remove particles that aren't on the canvas
-    var cleanUpArray = function () {
-      particles = particles.filter((p) => {
-        return p.x > -100 && p.y > -100;
-      });
-    };
-    var initParticles = function (numParticles, x, y) {
-      for (let i = 0; i < numParticles; i++) {
-        particles.push(new Particle(x, y));
-      }
-      particles.forEach((p) => {
-        drawParticle(p.x, p.y, p.r, p.c);
-      });
-    };
-
-    // That thing
-    window.requestAnimFrame = (function () {
-      return (
-        window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        function (callback) {
-          window.setTimeout(callback, 1000 / 60);
-        }
-      );
-    })();
-
-    // Our Frame function
-    var frame = function () {
-      // Draw background first
-      drawBg(ctx, colorPalette.bg);
-      // Update Particle models to new position
-      particles.map((p) => {
-        return updateParticleModel(p);
-      });
-      // Draw em'
-      particles.forEach((p) => {
-        drawParticle(p.x, p.y, p.r, p.c);
-      });
-      // Play the same song? Ok!
-      window.requestAnimFrame(frame);
-    };
-    // Click listener
-    document.body.addEventListener("click", function (event) {
-      console.log(event.bubbles);
-      var x = event.clientX,
-        y = event.clientY;
-      cleanUpArray();
-      initParticles(config.particleNumber, x, y);
+  init = () => {
+    renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById("background"),
+      antialias: true,
+      alpha: true,
     });
-    // First Frame
-    frame();
-    // First particle explosion
-    initParticles(config.particleNumber);
+    camera = new THREE.PerspectiveCamera(conf.fov);
+    camera.position.z = conf.cameraZ;
+
+    this.updateSize();
+    window.addEventListener("resize", this.updateSize, false);
+
+    this.initScene();
+    this.initGui();
+    this.animate();
+  };
+
+  initGui = () => {
+    // noiseInput.value = 101 - conf.xyCoef;
+    // heightInput.value = (conf.zCoef * 100) / 25;
+    // noiseInput.addEventListener("input", (e) => {
+    //   conf.xyCoef = 101 - noiseInput.value;
+    // });
+    // heightInput.addEventListener("input", (e) => {
+    //   conf.zCoef = (heightInput.value * 25) / 100;
+    // });
+  };
+
+  initScene = () => {
+    scene = new THREE.Scene();
+    this.initLights();
+
+    let mat = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+    });
+    // let mat = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    // let mat = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.5, metalness: 0.8 });
+    let geo = new THREE.PlaneBufferGeometry(
+      wWidth,
+      wHeight,
+      wWidth / 2,
+      wHeight / 2
+    );
+    plane = new THREE.Mesh(geo, mat);
+    scene.add(plane);
+
+    plane.rotation.x = -Math.PI / 2 - 0.2;
+    plane.position.y = -25;
+    camera.position.z = 60;
+  };
+
+  initLights = () => {
+    const r = 30;
+    const y = 10;
+    const lightDistance = 500;
+
+    // light = new THREE.AmbientLight(conf.ambientColor);
+    // scene.add(light);
+
+    light1 = new THREE.PointLight(
+      conf.light1Color,
+      conf.lightIntensity,
+      lightDistance
+    );
+    light1.position.set(0, y, r);
+    scene.add(light1);
+    light2 = new THREE.PointLight(
+      conf.light2Color,
+      conf.lightIntensity,
+      lightDistance
+    );
+    light2.position.set(0, -y, -r);
+    scene.add(light2);
+    light3 = new THREE.PointLight(
+      conf.light3Color,
+      conf.lightIntensity,
+      lightDistance
+    );
+    light3.position.set(r, y, 0);
+    scene.add(light3);
+    light4 = new THREE.PointLight(
+      conf.light4Color,
+      conf.lightIntensity,
+      lightDistance
+    );
+    light4.position.set(-r, y, 0);
+    scene.add(light4);
+  };
+
+  animate = () => {
+    requestAnimationFrame(this.animate);
+
+    this.animatePlane();
+    this.animateLights();
+
+    renderer.render(scene, camera);
+  };
+
+  animatePlane = () => {
+    gArray = plane.geometry.attributes.position.array;
+    const time = Date.now() * 0.0002;
+    for (let i = 0; i < gArray.length; i += 3) {
+      gArray[i + 2] =
+        simplex.noise4D(
+          gArray[i] / conf.xyCoef,
+          gArray[i + 1] / conf.xyCoef,
+          time,
+          mouse.x + mouse.y
+        ) * conf.zCoef;
+    }
+    plane.geometry.attributes.position.needsUpdate = true;
+    // plane.geometry.computeBoundingSphere();
+  };
+
+  animateLights = () => {
+    const time = Date.now() * 0.001;
+    const d = 50;
+    light1.position.x = Math.sin(time * 0.1) * d;
+    light1.position.z = Math.cos(time * 0.2) * d;
+    light2.position.x = Math.cos(time * 0.3) * d;
+    light2.position.z = Math.sin(time * 0.4) * d;
+    light3.position.x = Math.sin(time * 0.5) * d;
+    light3.position.z = Math.sin(time * 0.6) * d;
+    light4.position.x = Math.sin(time * 0.7) * d;
+    light4.position.z = Math.cos(time * 0.8) * d;
+  };
+
+  updateLightsColors = () => {
+    conf.light1Color = chroma.random().hex();
+    conf.light2Color = chroma.random().hex();
+    conf.light3Color = chroma.random().hex();
+    conf.light4Color = chroma.random().hex();
+    light1.color = new THREE.Color(conf.light1Color);
+    light2.color = new THREE.Color(conf.light2Color);
+    light3.color = new THREE.Color(conf.light3Color);
+    light4.color = new THREE.Color(conf.light4Color);
+    // console.log(conf);
+  };
+
+  updateSize = () => {
+    width = window.innerWidth;
+    cx = width / 2;
+    height = window.innerHeight;
+    cy = height / 2;
+    if (renderer && camera) {
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      const wsize = this.getRendererSize();
+      wWidth = wsize[0];
+      wHeight = wsize[1];
+    }
+  };
+
+  getRendererSize = () => {
+    const cam = new THREE.PerspectiveCamera(camera.fov, camera.aspect);
+    const vFOV = (cam.fov * Math.PI) / 180;
+    const height = 2 * Math.tan(vFOV / 2) * Math.abs(conf.cameraZ);
+    document.getElementById("background").style.width = "100%";
+    const width = document.getElementById("background").clientWidth;
+    return [width, height];
   };
 
   redirect = (index) => {
@@ -193,43 +229,37 @@ class UI extends Component {
   render = () => {
     return (
       <>
-        <section id="canvasSection">
-          <canvas id="canvas" className="uiCanvas"></canvas>
-          <div className="uiContainer">
-            <div className="intro nameTag">
-              <h1>
-                <p>
-                  <span className="colorCharacter">I</span>
-                  <span>'m</span>
-                </p>
-                <p>
-                  <span className="colorCharacter">S</span>
-                  <span className="reducer">idharth </span>
-                  <span className="colorCharacter">S</span>
-                  <span className="reducer">uresh</span>
-                </p>
-                <p className="reducer">
-                  <u className="colorCharacter"> M</u>
-                  <span>aker</span>
-                </p>
-              </h1>
-            </div>
-            <Card></Card>
-            <div className="socialContainer">
-              <div className="socialIcon">
-                <FaLinkedinIn onClick={() => this.redirect(0)} />
-              </div>
-              <div className="socialIcon">
-                <a href="./1.jpeg" download />
-                <FaFileDownload />
-              </div>
-              <div className="socialIcon">
-                <FaGithub onClick={() => this.redirect(2)} />
-              </div>
-            </div>
+        <div className="uiContainer">
+          <div className="background">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1440 320"
+              style={{
+                width: "100%",
+                position: "absolute",
+                bottom: "0%",
+              }}
+            >
+              <path
+                fill="#0099ff"
+                fillOpacity="1"
+                d="M0,288L120,282.7C240,277,480,267,720,234.7C960,203,1200,149,1320,122.7L1440,96L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z"
+              ></path>
+            </svg>
           </div>
-        </section>
-        <section></section>
+          <div className="side-panel">
+            <QuoteGenerator />
+          </div>
+          <canvas
+            id="background"
+            style={{
+              position: "absolute",
+              right: "0px",
+            }}
+          ></canvas>
+          <MainContainer />
+          <SocialContainer></SocialContainer>
+        </div>
       </>
     );
   };

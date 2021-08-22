@@ -1,7 +1,18 @@
+@font-face {
+  font-family: Bogart-Bold;
+  src: url(./dist/fonts/Bogart-Bold-trial.ttf);
+}
+
+@font-face {
+  font-family: EncodeSans-Regular;
+  src: url(./dist/fonts/EncodeSans-Regular.ttf);
+}
+
 body {
   padding: 0;
   margin: 0;
   width: 100%;
   background: black;
   user-select: none;
+  overflow: hidden; /* Hide scrollbars */
 }
