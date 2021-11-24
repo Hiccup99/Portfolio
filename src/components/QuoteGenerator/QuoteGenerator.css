@@ -4,6 +4,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+}
+
+.fadingIn {
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.fadingOut {
+  opacity: 1;
+  transition: all 0.5s ease;
 }
 
 .card {
@@ -11,10 +22,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 80%;
+  width: 95%;
   background: hsl(88, 25%, 11%, 0.5);
   border: 0.2rem solid white;
-  opacity: 0.9;
   border-radius: 2rem;
 }
 .card p {

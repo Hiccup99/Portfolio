@@ -14,12 +14,6 @@ let plane;
 const simplex = new SimplexNoise();
 
 const mouse = new THREE.Vector2();
-const mousePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-const mousePosition = new THREE.Vector3();
-const raycaster = new THREE.Raycaster();
-
-const noiseInput = document.getElementById("");
-const heightInput = document.getElementById("");
 
 const conf = {
   fov: 75,
@@ -38,6 +32,8 @@ class UI extends Component {
   state = {};
 
   componentDidMount = () => {
+    console.log(THREE);
+    console.log(document.getElementById("background"));
     this.init();
   };
 
@@ -230,23 +226,6 @@ class UI extends Component {
     return (
       <>
         <div className="uiContainer">
-          <div className="background">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1440 320"
-              style={{
-                width: "100%",
-                position: "absolute",
-                bottom: "0%",
-              }}
-            >
-              <path
-                fill="#0099ff"
-                fillOpacity="1"
-                d="M0,288L120,282.7C240,277,480,267,720,234.7C960,203,1200,149,1320,122.7L1440,96L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z"
-              ></path>
-            </svg>
-          </div>
           <div className="side-panel">
             <QuoteGenerator />
           </div>
