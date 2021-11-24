@@ -1,0 +1,46 @@
+.typeOne-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+  padding: 2rem;
+  background: white;
+  box-sizing: border-box;
+  margin: 1rem 0.2rem 0rem 1rem;
+  border-radius: 2rem;
+  transform-style: preserve-3d;
+  box-shadow: -1px 0 12px 0 rgba(34, 33, 81, 0.01),
+    12px 12px 12px 0 rgba(34, 33, 81, 0.25);
+  transition: 0.4s ease-in-out transform, 0.4s ease-in-out box-shadow;
+  text-align: center;
+}
+
+.typeOne-container:hover {
+  transform: translate3d(0px, -5px, 0px);
+  box-shadow: -1px 0 12px 0 rgba(97, 96, 96, 0.15),
+    28px 28px 12px -10px rgba(97, 96, 96, 0.15);
+}
+
+.rotateText {
+  transform: rotate(90deg);
+}
+
+.typeOne-container p {
+  margin: 0;
+  width: 100%;
+  font-family: Bogart-Bold;
+  color: rgb(0, 0, 0);
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.typeOne-container img {
+  margin: 0;
+  height: 60%;
+  filter: grayscale(100%);
+}
+
+.typeOne-container img:hover {
+  filter: grayscale(0%);
+}
